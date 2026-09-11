@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0a0b10;
+  --color-surface: #12141b;
+  --color-raised: #191c25;
+  --color-line: rgb(255 255 255 / 0.07);
+  --color-ink: #f3f5f9;
+  --color-ink-2: #a6adbb;
+  --color-ink-3: #6e7584;
+  --color-accent: #4d8df6;
+  --color-accent-soft: rgb(77 141 246 / 0.14);
+  --color-muted-bar: #5b6273;
+  --color-save: #5fd4a0;
+  --color-warn: #f5b74f;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
+  --animate-rise: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-fade: fade 0.4s ease-out both;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-breathe: breathe 1.6s ease-in-out infinite;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 0.35; transform: scale(0.85); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes sheet {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+}
+
+html {
+  background: var(--color-bg);
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.snap-rail {
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 1rem;
+}
+.snap-rail > * {
+  scroll-snap-align: start;
+}
+
+.ai-text {
+  background: linear-gradient(92deg, #8fb4ff 0%, #b79cff 60%, #f0a6d8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glow {
+  background:
+    radial-gradient(60% 40% at 50% 0%, rgb(77 141 246 / 0.18), transparent 70%),
+    radial-gradient(40% 30% at 85% 10%, rgb(183 156 255 / 0.12), transparent 70%);
+}
+
+.shimmer-line {
+  background: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 0.08) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+.sheet-in {
+  animation: sheet 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
