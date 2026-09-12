@@ -24,3 +24,10 @@ Set your home airports with `DEFAULT_ORIGINS=SFO,OAK,SJC`. Other optional settin
 - A search takes about 30–60 seconds; recent searches are cached.
 - One adult, prices in USD. The round-trip price is real, but you pick the return flight on the booking link.
 - Google Flights has no official API and doesn't allow automated access, so keep this to personal, low-volume use.
+
+## Harness startup
+
+`npm run dev` and `npm start` both build and serve the production app on port 4340.
+The server accepts connections only after the build finishes. This avoids the development
+server's live-reload connection dependency when opening the app through the harness.
+For code editing only, `npm run dev:hot` runs the development server on port 4341.

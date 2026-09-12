@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -H 0.0.0.0 -p 4340",
+    "dev": "node scripts/serve.mjs",
     "build": "next build",
-    "start": "next start -H 0.0.0.0 -p 4340",
+    "start": "node scripts/serve.mjs",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check": "tsc --noEmit && eslint && vitest run"
+    "check": "tsc --noEmit && eslint && vitest run",
+    "dev:hot": "next dev -H 0.0.0.0 -p 4341"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.125.0",

@@ -5,17 +5,21 @@ try {
  const page=await browser.newPage({viewport:{width:393,height:852}});
  await page.route('**/api/status',r=>r.abort());
  await page.goto(base);
+ if(await page.locator('script[src]').evaluateAll(es=>es.some(e=>/hmr|next-devtools/.test(e.src))))throw Error('Harness served the development runtime');
  await page.getByRole('textbox').fill('Tokyo next month');
  const button=page.getByRole('button',{name:'Analyze Trips',exact:true});
  if(await button.isDisabled())throw Error('Disabled with text');
  // Simulate restored/autofilled DOM text without a React input event.
  await page.getByRole('textbox').evaluate(el=>el.value='Seoul from restored text');
  let submitted;
+ let polls=0;
  await page.route('**/api/trip*',async r=>{
    if(r.request().method()==='POST') {submitted=r.request().postDataJSON();await r.fulfill({json:{searchId:submitted.searchId}});}
-   else await r.fulfill({json:{events:[{type:'error',message:'Test intercepted'}],cursor:1,done:true}});
+   else { polls++; await r.fulfill({json:{events:polls===1?[{type:'progress',stage:'dates',message:'Comparing test dates…'}]:[{type:'error',message:'Test intercepted'}],cursor:polls,done:polls>1}}); }
  });
  await button.click();
+ await page.getByText('Comparing test dates…').waitFor();
+ if(new URL(page.url()).searchParams.has('trip'))throw Error('Submit fell back to a page reload');
  await page.getByText('Test intercepted').waitFor();
  if(submitted.query!=='Seoul from restored text')throw Error('Stale request submitted');
  console.log('PASS: status unavailable and restored DOM text');
