@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { formatRange } from "@/lib/dates";
 import { fmtDuration, fmtPrice, fmtStops, fmtTime } from "@/lib/format";
 import type { ScoredItinerary, TripIntent, TripResult } from "@/lib/types";
+import DestinationExplorer from "./DestinationExplorer";
 import DateIntel from "./DateIntel";
 import FollowUpBar from "./FollowUpBar";
 import { ModePill } from "./Home";
@@ -89,42 +90,6 @@ function Recommendation({ result, it, onOpen }: { result: TripResult; it: Scored
         <button onClick={onOpen} className="mt-5 h-12 w-full rounded-2xl bg-white text-[16px] font-semibold text-black active:scale-[0.98] transition">
           {it.bookingUrl ? "See flight & book" : "See flight details"}
         </button>
-      </div>
-    </section>
-  );
-}
-
-function DestinationRail({ result, byId, onOpen }: { result: TripResult; byId: Map<string, ScoredItinerary>; onOpen: (id: string) => void }) {
-  if (!result.destinations.length) return null;
-  return (
-    <section className="animate-rise [animation-delay:80ms]">
-      <SectionTitle title="Where you could go" sub={`Best fare found to each of ${result.destinations.length} top destinations`} />
-      <div className="no-scrollbar snap-rail -mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
-        {result.destinations.map((d, i) => {
-          const it = byId.get(d.itineraryId);
-          return (
-            <button
-              key={d.itineraryId}
-              onClick={() => onOpen(d.itineraryId)}
-              className={`flex w-[188px] shrink-0 flex-col rounded-3xl border p-4 text-left transition active:scale-[0.98] ${i === 0 ? "border-accent/30 bg-[#141b2e]" : "border-line bg-surface"}`}
-            >
-              <div className="min-h-[20px] text-[12px] font-medium text-ink-2">{d.badge ?? ""}</div>
-              <div className="mt-2 truncate text-[19px] leading-tight font-semibold">{d.city}</div>
-              <div className="truncate text-[12px] text-ink-3">
-                {d.country}
-                {d.distanceMiles ? ` · ${d.distanceMiles.toLocaleString("en-US")} mi` : ""}
-              </div>
-              <div className="mt-3 text-[34px] leading-none font-semibold tracking-tight">{fmtPrice(d.price)}</div>
-              <div className="mt-1.5 text-[13px] whitespace-nowrap text-ink-2">
-                {d.nights + 1} days{it ? ` · ${formatRange(it.departDate, it.returnDate)}` : ""}
-              </div>
-              <div className="mt-2 text-[12px] text-ink-3">
-                {fmtStops(d.stops)} · {fmtDuration(d.durationMin)}
-              </div>
-              <p className="mt-3 text-[13px] leading-snug text-ink italic">&ldquo;{d.note}&rdquo;</p>
-            </button>
-          );
-        })}
       </div>
     </section>
   );
@@ -269,11 +234,11 @@ export default function Results(props: {
         )}
 
         <div className="space-y-7">
-          {recommended && <Recommendation result={result} it={recommended} onOpen={() => setSheetId(recommended.id)} />}
+          {open && <DestinationExplorer result={result} onOpen={setSheetId} onFollowUp={onFollowUp} />}
+          {recommended && (open ? <details className="rounded-2xl border border-line p-3"><summary className="cursor-pointer p-2 text-sm">Our top pick: {recommended.destinationCity} · {fmtPrice(recommended.price)} — read the analysis</summary><Recommendation result={result} it={recommended} onOpen={() => setSheetId(recommended.id)} /></details> : <Recommendation result={result} it={recommended} onOpen={() => setSheetId(recommended.id)} />)}
 
           <Understood key={result.generatedAt} intent={result.intent} by={result.interpretedBy} onRerun={onRerun} />
 
-          {open && <DestinationRail result={result} byId={byId} onOpen={setSheetId} />}
           <CategoryRail result={result} byId={byId} onOpen={setSheetId} />
           <DateIntel city={result.dateFocus} buckets={result.dateBuckets} points={result.datePoints} insights={result.insights} />
           <Alternatives items={alternatives} open={open} onOpen={setSheetId} />

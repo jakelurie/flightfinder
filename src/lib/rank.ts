@@ -232,7 +232,7 @@ function matchedTags(it: Itinerary, intent: TripIntent): string[] {
 export function destinationCards(ranked: ScoredItinerary[], intent?: TripIntent): DestinationCard[] {
   const bestPerCity = new Map<string, ScoredItinerary>();
   for (const it of ranked) if (!bestPerCity.has(it.destinationCity)) bestPerCity.set(it.destinationCity, it);
-  const picks = [...bestPerCity.values()].slice(0, 8);
+  const picks = [...bestPerCity.values()].slice(0, 16);
   if (picks.length < 2) return [];
 
   const medianPrice = median(picks.map((p) => p.price));

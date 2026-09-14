@@ -1,3 +1,4 @@
+import { diverseCandidates } from "./discovery";
 import { cacheGet, cacheSet } from "./cache";
 import { addDays, daysBetween, formatShort, monthOf, spreadDates } from "./dates";
 import { DESTINATIONS, REGION_KGMID, REGION_LABELS, airportCoords, distanceBetween, findDestination, haversineMiles, regionForCountry } from "./geo";
@@ -265,16 +266,8 @@ async function searchOpen(intent: TripIntent, s: Searcher, progress: ProgressFn)
   }
 
   const ranked = rankCandidates(intent, candidates);
-  const perCountry = new Map<string, number>();
-  const maxDeep = Math.max(3, Math.min(8, s.budgetLeft - 6));
-  const chosen: Candidate[] = [];
-  for (const c of ranked) {
-    if (chosen.length >= maxDeep) break;
-    const n = perCountry.get(c.country) ?? 0;
-    if (n >= 2) continue;
-    perCountry.set(c.country, n + 1);
-    chosen.push(c);
-  }
+  const maxDeep = Math.max(0, Math.min(16, s.budgetLeft - 6));
+  const chosen = diverseCandidates(ranked, maxDeep);
   if (!chosen.length) return candidates.length;
 
   progress("candidates", `Checking the best ${chosen.length} candidates: ${chosen.slice(0, 4).map((c) => c.city).join(", ")}${chosen.length > 4 ? "…" : ""}`);
